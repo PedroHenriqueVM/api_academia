@@ -158,6 +158,11 @@ def post_aluno():
         return jsonify({"error":"Dados inválidos!"}), 400
 
     try:
+        # Verifica se já existe aluno com o mesmo CPF
+        cpf = dados["cpf"]
+        existe = db.collection("alunos_academia").where("cpf", "==", cpf).limit(1).get()
+        if existe:
+            return jsonify({"error": "CPF já cadastrado!"}), 400
 
         contador_ref = db.collection("contador").document("controle_id")
         contador_doc = contador_ref.get()
@@ -171,7 +176,7 @@ def post_aluno():
         db.collection("alunos_academia").add({
             "id":novo_id,
             "nome":dados["nome"],
-            "cpf":dados["cpf"],
+            "cpf":cpf,
             "status":dados.get("status","ATIVO")
         })
 
