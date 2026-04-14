@@ -1,0 +1,179 @@
+openapi: 3.0.3
+
+info:
+  title: API Academia
+  description: API para gerenciamento de alunos de academia e controle de catraca
+  version: "1.0"
+  contact:
+    name: Pedro
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+
+  /:
+    get:
+      summary: Rota principal da API
+      responses:
+        "200":
+          description: Informações da API
+
+  /login:
+    post:
+      summary: Login do administrador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usuario
+                - senha
+              properties:
+                usuario:
+                  type: string
+                  example: admin
+                senha:
+                  type: string
+                  example: adm
+      responses:
+        "200":
+          description: Login realizado com sucesso
+        "401":
+          description: Usuário ou senha inválidos
+
+  /alunos:
+    get:
+      summary: Listar todos os alunos
+      responses:
+        "200":
+          description: Lista de alunos
+
+    post:
+      summary: Criar novo aluno
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - cpf
+              properties:
+                nome:
+                  type: string
+                  example: João Silva
+                cpf:
+                  type: string
+                  example: "12345678900"
+                status:
+                  type: string
+                  example: ATIVO
+      responses:
+        "201":
+          description: Aluno criado
+        "400":
+          description: Dados inválidos
+
+  /alunos/{id}:
+    get:
+      summary: Buscar aluno por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Aluno encontrado
+        "404":
+          description: Aluno não encontrado
+
+    put:
+      summary: Atualizar aluno
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - cpf
+                - status
+              properties:
+                nome:
+                  type: string
+                  example: João Silva
+                cpf:
+                  type: string
+                  example: "12345678900"
+                status:
+                  type: string
+                  example: ATIVO
+      responses:
+        "200":
+          description: Aluno atualizado
+        "404":
+          description: Aluno não encontrado
+
+    delete:
+      summary: Excluir aluno
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Aluno excluído
+        "404":
+          description: Aluno não encontrado
+
+  /catraca:
+    post:
+      summary: Verificar acesso na catraca
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cpf
+              properties:
+                cpf:
+                  type: string
+                  example: "12345678900"
+      responses:
+        "200":
+          description: Acesso liberado
+        "403":
+          description: Acesso bloqueado
+        "404":
+          description: Aluno não encontrado
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
