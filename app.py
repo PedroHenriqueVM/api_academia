@@ -127,11 +127,6 @@ def catraca():
         aluno = item.to_dict()
 
         if aluno["status"] == "ATIVO":
-            # Salva registro de acesso
-            db.collection("acessos").add({
-                "cpf": cpf,
-                "data_hora": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            })
             return jsonify({
                 "status":"LIBERADO"
             }), 200
