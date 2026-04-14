@@ -161,6 +161,9 @@ def post_aluno():
     cpf_numeros = ''.join(filter(str.isdigit, cpf))
     if not nome or len(nome) < 2 or not cpf or len(cpf_numeros) != 11:
         return jsonify({"error":"Nome deve ter ao menos 2 letras e CPF deve ter 11 dígitos."}), 400
+    # Proíbe CPF com todos os dígitos iguais
+    if cpf_numeros == cpf_numeros[0] * 11:
+        return jsonify({"error":"CPF inválido: não pode ter todos os dígitos iguais."}), 400
 
     try:
         # Verifica se já existe aluno com o mesmo CPF
@@ -205,6 +208,9 @@ def alunos_put(id):
     cpf_numeros = ''.join(filter(str.isdigit, cpf))
     if not nome or len(nome) < 2 or not cpf or len(cpf_numeros) != 11 or "status" not in dados:
         return jsonify({"error":"Nome deve ter ao menos 2 letras, CPF deve ter 11 dígitos e status é obrigatório."}), 400
+    # Proíbe CPF com todos os dígitos iguais
+    if cpf_numeros == cpf_numeros[0] * 11:
+        return jsonify({"error":"CPF inválido: não pode ter todos os dígitos iguais."}), 400
 
     try:
         # Verifica se já existe outro aluno com o mesmo CPF
