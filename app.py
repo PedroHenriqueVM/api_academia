@@ -196,6 +196,13 @@ def alunos_put(id):
         return jsonify({"error":"Dados inválidos ou incompletos!"}), 400
 
     try:
+        # Verifica se já existe outro aluno com o mesmo CPF
+        cpf = dados["cpf"]
+        existe = db.collection("alunos_academia").where("cpf", "==", cpf).get()
+        for aluno in existe:
+            aluno_dict = aluno.to_dict()
+            if aluno_dict.get("id") != id:
+                return jsonify({"error": "CPF já cadastrado para outro aluno!"}), 400
 
         docs = db.collection("alunos_academia").where("id","==",id).limit(1).get()
 
@@ -206,7 +213,7 @@ def alunos_put(id):
             doc_ref = db.collection("alunos_academia").document(doc.id)
             doc_ref.update({
                 "nome":dados["nome"],
-                "cpf":dados["cpf"],
+                "cpf":cpf,
                 "status":dados["status"]
             })
 
