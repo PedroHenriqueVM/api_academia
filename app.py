@@ -152,14 +152,19 @@ def catraca():
 @token_obrigatorio
 def post_aluno():
 
+
     dados = request.get_json()
 
-    if not dados or "nome" not in dados or "cpf" not in dados:
-        return jsonify({"error":"Dados inválidos!"}), 400
+    # Validação de nome e CPF
+    nome = dados.get("nome", "").strip() if dados else ""
+    cpf = dados.get("cpf", "").strip() if dados else ""
+    cpf_numeros = ''.join(filter(str.isdigit, cpf))
+    if not nome or len(nome) < 2 or not cpf or len(cpf_numeros) != 11:
+        return jsonify({"error":"Nome deve ter ao menos 2 letras e CPF deve ter 11 dígitos."}), 400
 
     try:
         # Verifica se já existe aluno com o mesmo CPF
-        cpf = dados["cpf"]
+
         existe = db.collection("alunos_academia").where("cpf", "==", cpf).limit(1).get()
         if existe:
             return jsonify({"error": "CPF já cadastrado!"}), 400
@@ -173,9 +178,10 @@ def post_aluno():
 
         contador_ref.update({"ultimo_id":novo_id})
 
+
         db.collection("alunos_academia").add({
             "id":novo_id,
-            "nome":dados["nome"],
+            "nome":nome,
             "cpf":cpf,
             "status":dados.get("status","ATIVO")
         })
@@ -190,10 +196,15 @@ def post_aluno():
 @token_obrigatorio
 def alunos_put(id):
 
+
     dados = request.get_json()
 
-    if not dados or "nome" not in dados or "cpf" not in dados or "status" not in dados:
-        return jsonify({"error":"Dados inválidos ou incompletos!"}), 400
+    # Validação de nome e CPF
+    nome = dados.get("nome", "").strip() if dados else ""
+    cpf = dados.get("cpf", "").strip() if dados else ""
+    cpf_numeros = ''.join(filter(str.isdigit, cpf))
+    if not nome or len(nome) < 2 or not cpf or len(cpf_numeros) != 11 or "status" not in dados:
+        return jsonify({"error":"Nome deve ter ao menos 2 letras, CPF deve ter 11 dígitos e status é obrigatório."}), 400
 
     try:
         # Verifica se já existe outro aluno com o mesmo CPF
