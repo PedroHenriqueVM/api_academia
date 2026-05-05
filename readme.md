@@ -328,6 +328,6 @@ status: ATIVO
 
 # 👨‍💻 Autor
 
-Pedro Henrique
+Pedro Henrique e Luiz Felipe 
 
 Projeto desenvolvido para fins educacionais no curso de **Desenvolvimento de Sistemas**.
